@@ -4,17 +4,14 @@ import ChatIcon from '@material-ui/icons/Chat';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import SearchOutlined from '@material-ui/icons/SearchOutlined';
 import React, { useEffect, useState } from 'react';
-import './Sidebar.css';
+import '../styles/Sidebar.css';
 import SidebarChat from './SidebarChat';
-import db from './firebase';
-import firebase from 'firebase';
-import { useStateValue } from './StateProvider';
-import { actionTypes } from './reducer';
+import db from '../firebase/firebase';
+import { connect } from 'react-redux';
+import { startLogout } from '../actions/auth';
 
-function Sidebar() {
-    const [rooms, setRooms] = useState([])
-    const [{ user }] = useStateValue()
-    const [{}, dispatch] = useStateValue();
+function Sidebar({ user, startLogout }) {
+    const [rooms, setRooms] = useState([]);
 
     useEffect(() => {
         const unsubscrib = db.collection('rooms').onSnapshot(snapshot => (
@@ -29,15 +26,6 @@ function Sidebar() {
         }
     }, [])
 
-    const signOut = () => {
-        firebase.auth().signOut().then(() => {
-            dispatch({
-                type: actionTypes.REMOVE_USER
-            })
-        })
-        .catch(error => alert(error.message));
-    }
-
     return (
         <div className="sidebar">
 
@@ -50,7 +38,7 @@ function Sidebar() {
                     <IconButton>
                         <ChatIcon />
                     </IconButton>
-                    <IconButton onClick={signOut}>
+                    <IconButton onClick={startLogout}>
                         <ExitToAppIcon />
                     </IconButton>
                 </div>
@@ -76,4 +64,12 @@ function Sidebar() {
     )
 }
 
-export default Sidebar
+const mapStateToProps = (state) => ({
+    user: state.user
+})
+
+const mapDispatchToProps = (dispatch) => ({
+    startLogout: dispatch(startLogout)
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(Sidebar)

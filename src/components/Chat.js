@@ -5,18 +5,16 @@ import InsertEmoticonIcon from '@material-ui/icons/InsertEmoticon';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import firebase from 'firebase'
-import "./Chat.css"
-import db from './firebase';
-import { useStateValue } from './StateProvider';
+import "../styles/Chat.css"
+import db from '../firebase/firebase';
+import { connect } from 'react-redux';
 
-function Chat() {
+function Chat({ user }) {
     const [seed, setSeed] = useState('');
     const [input, setInput] = useState('');
     const { roomId } = useParams();
     const [roomName, setRoomName] = useState('');
     const [messages, setMessages] = useState([]);
-    const [{ user }] = useStateValue();
-
     useEffect(() => {
         if (roomId) {
             db.collection('rooms')
@@ -98,4 +96,8 @@ function Chat() {
     )
 }
 
-export default Chat
+const mapStateToProps = (state) => ({
+    user: state.user
+})
+
+export default connect(mapStateToProps)(Chat)

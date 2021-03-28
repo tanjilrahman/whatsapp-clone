@@ -1,35 +1,30 @@
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
-import './App.css';
-import Chat from './Chat';
-import Sidebar from './Sidebar';
-import Login from './Login';
-import { useStateValue } from './StateProvider';
+import { Router, Route, Switch } from 'react-router-dom';
 
-function App() {
-  const [{ user }] = useStateValue();
+import './styles/App.css';
+import Chat from './components/Chat';
+import Sidebar from './components/Sidebar';
+import Login from './components/Login';
+import { createBrowserHistory } from 'history';
+import PageNotFound from './components/PageNotFound';
+import PublicRoute from './AppRoute/PublicRoute';
+import PrivateRoute from './AppRoute/PrivateRoute';
 
-  return (
+
+export const history = createBrowserHistory()
+
+const App = () => (
   <div className="app">
-    {!user ? (
-      <Login />
-    ) : (
-      
+    <Router history={history}>
       <div className="app__body">
-        <Router>
-          <Sidebar />
-          <Switch>
-            <Route path="/rooms/:roomId"> 
-              <Chat />
-            </Route>
-            <Route path="/">
-            
-            </Route>
-            </Switch>
-        </Router>
+      <Sidebar />
+      <Switch>
+          <PublicRoute path="/" component={Login} exact={true} />
+          <PrivateRoute path="/rooms/:roomId" component={Chat} />
+          <Route component={PageNotFound} />
+      </Switch>
       </div>
-    )}
-  </div>  
-  );
-}
+    </Router>
+  </div>
+)
 
 export default App;
